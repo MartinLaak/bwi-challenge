@@ -1,5 +1,6 @@
 import {
   CLEAR_STORE_TRANSPORTER,
+  INIT_DATA,
   ADD_TRANSPORTER,
   ADD_ITEM_STORE,
   ADD_ITEM_TRANSPORTER,
@@ -9,6 +10,7 @@ import {
 } from "../actions/actionTypes";
 
 const initialState = {
+  initData:[],
   transporter: [],
   storeItems: [],
 };
@@ -21,6 +23,12 @@ export default function (state = initialState, action) {
         ...state,
         transporter: [],
         storeItems: [],
+      };
+    }
+    case INIT_DATA:{
+      return {
+        ...state,
+        initData: [action.payload.d],
       };
     }
     case ADD_TRANSPORTER: {

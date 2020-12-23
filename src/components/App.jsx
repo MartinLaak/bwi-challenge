@@ -8,6 +8,7 @@ import {
   addItemToTransporterAction,
   removeItemFromTransporterAction,
   resetStoreTransporterAction,
+  initDataAction,
 } from "../redux/actions/actions.js";
 
 import Button from "@material-ui/core/Button";
@@ -85,7 +86,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.props.resetStoreTransporterAction([]);
-
+    this.props.initDataAction(data);
     Object.entries(data).forEach(([k, v]) => {
       v.units = { requested: v.req_units, left: v.req_units };
       v.ratio = { wu: v.weight / v.utility, uw: v.utility / v.weight };
@@ -161,11 +162,14 @@ class App extends React.Component {
           />
         </div> */}
         <div>
-          <Store
-            name={"Store Bonn"}
-          />
+          <Store name={"Store Bonn"} />
         </div>
-        <div>
+        <div
+          style={{
+            margin: "0px",
+            padding: "20px",
+          }}
+        >
           <Button onClick={this.addItem} variant="contained" color="primary">
             Allocate the Items to the Transporters!
           </Button>
@@ -218,4 +222,5 @@ export default connect(null, {
   addItemToTransporterAction,
   removeItemFromTransporterAction,
   resetStoreTransporterAction,
+  initDataAction,
 })(App);

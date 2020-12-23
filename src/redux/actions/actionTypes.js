@@ -1,6 +1,7 @@
 export const ADD_ITEM = "ADD_ITEM";
 export const REMOVE_ITEM = "REMOVE_ITEM";
 
+export const INIT_DATA = "INIT_DATA";
 export const CLEAR_STORE_TRANSPORTER = "CLEAR_STORE_TRANSPORTER";
 export const ADD_TRANSPORTER = "ADD_TRANSPORTER";
 export const ADD_ITEM_STORE = "ADD_ITEM_STORE";

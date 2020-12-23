@@ -6,6 +6,7 @@ export const data = [
     req_units: 205,
     weight: 2451,
     utility: 40,
+    img: "/images/cat1.jpeg",
   },
   {
     id: 1,
@@ -14,6 +15,7 @@ export const data = [
     req_units: 420,
     weight: 2978,
     utility: 35,
+    img: "/images/cat2.jpeg",
   },
   {
     id: 2,
@@ -22,6 +24,7 @@ export const data = [
     req_units: 450,
     weight: 3625,
     utility: 80,
+    img: "/images/dog1.jpeg",
   },
   {
     id: 3,
@@ -30,6 +33,7 @@ export const data = [
     req_units: 60,
     weight: 717,
     utility: 30,
+    img: "/images/dog2.jpeg",
   },
   {
     id: 4,
@@ -38,6 +42,7 @@ export const data = [
     req_units: 157,
     weight: 988,
     utility: 60,
+    img: "/images/dog3.jpeg",
   },
   {
     id: 5,
@@ -46,6 +51,7 @@ export const data = [
     req_units: 220,
     weight: 1220,
     utility: 65,
+    img: "/images/dog4.jpeg",
   },
   {
     id: 6,
@@ -54,6 +60,7 @@ export const data = [
     req_units: 620,
     weight: 1405,
     utility: 40,
+    img: "/images/cat1.jpeg",
   },
   {
     id: 7,
@@ -62,6 +69,7 @@ export const data = [
     req_units: 250,
     weight: 1455,
     utility: 40,
+    img: "/images/dog4.jpeg",
   },
   {
     id: 8,
@@ -70,6 +78,7 @@ export const data = [
     req_units: 540,
     weight: 1690,
     utility: 45,
+    img: "/images/dog3.jpeg",
   },
   {
     id: 9,
@@ -78,6 +87,7 @@ export const data = [
     req_units: 370,
     weight: 1980,
     utility: 68,
+    img: "/images/cat2.jpeg",
   },
 ];
 
