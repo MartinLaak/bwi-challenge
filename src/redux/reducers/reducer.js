@@ -7,10 +7,12 @@ import {
   REMOVE_ITEM_TRANSPORTER,
   ADD_ITEM,
   REMOVE_ITEM,
+  INIT_SORTED_DATA,
 } from "../actions/actionTypes";
 
 const initialState = {
-  initData:[],
+  initData: [],
+  sortedData: [],
   transporter: [],
   storeItems: [],
 };
@@ -25,14 +27,21 @@ export default function (state = initialState, action) {
         storeItems: [],
       };
     }
-    case INIT_DATA:{
+    case INIT_DATA: {
       return {
         ...state,
         initData: [action.payload.d],
       };
     }
+    case INIT_SORTED_DATA: {
+      // console.log(action.type, action.payload);
+      return {
+        ...state,
+        sortedData: action.payload.d,
+      };
+    }
     case ADD_TRANSPORTER: {
-      console.log(action);
+      // console.log(action);
       let tmp = state.transporter;
       tmp[action.payload.t.name] = action.payload.t;
       return {
@@ -45,7 +54,7 @@ export default function (state = initialState, action) {
       };
     }
     case ADD_ITEM_STORE: {
-      console.log(action.type, action.payload);
+      // console.log(action.type, action.payload);
       let tmp = state.storeItems;
       tmp[action.payload.t.name] = action.payload.t;
       return {
@@ -55,69 +64,99 @@ export default function (state = initialState, action) {
       };
     }
     case ADD_ITEM_TRANSPORTER: {
-      console.log(action.type, action.payload);
+      // console.log(action.type, action.payload);
       const { transporter, itm } = action.payload;
+      let tmpTransporters = state.transporter;
+      let tmpTransporter = state.transporter[transporter];
+      let tmpTransporterCargo = state.transporter[transporter].items;
       let tmpItems = state.storeItems;
-      if (tmpItems[itm] !== undefined) {
+
+      if (tmpItems[itm] === undefined) {
+        console.log("Trouble in the Warehouse!!! >> Item stolen?");
+      }
+
+      if (
+        tmpTransporter.weight_left - tmpItems[itm].weight > 0 &&
+        tmpItems[itm] !== undefined
+      ) {
         tmpItems[itm].units.left--;
-      } else {
-        console.log("Trouble in the Warehouse!!! >> Item stolen?");
-      }
-
-      let tmpTransporter = state.transporter;
-      let tmpTransporterCargo = state.transporter[transporter].items;
-    //   console.log(tmpTransporterCargo);
-      if (
-        tmpTransporterCargo[itm] === undefined &&
-        tmpItems[itm] !== undefined
-      ) {
-        tmpTransporterCargo[itm] = {
-          id: tmpItems[itm].id,
-          name: tmpItems[itm].name,
-          count: 1,
-          weight: tmpItems[itm].weight,
-          utility: tmpItems[itm].utility,
-        };
-      } else {
-        tmpTransporterCargo[itm].count++;
-      }
-
-      return {
-        ...state,
-        storeItems: tmpItems,
-        transporter: tmpTransporter,
-      };
-    }
-
-    case REMOVE_ITEM_TRANSPORTER: {
-      console.log(action.type, action.payload);
-      const { transporter, itm } = action.payload;
-      let tmpItems = state.storeItems;
-      if (tmpItems[itm] !== undefined) {
-        tmpItems[itm].units.left++;
-      } else {
-        console.log("Trouble in the Warehouse!!! >> Item stolen?");
-      }
-
-      let tmpTransporter = state.transporter;
-      let tmpTransporterCargo = state.transporter[transporter].items;
-      console.log(tmpTransporterCargo);
-      if (
-        tmpTransporterCargo[itm] === undefined &&
-        tmpItems[itm] !== undefined
-      ) {
-        console.log("Trouble in the Transporter!!! >> Item doesn't exist! Stolen?");
-      } else {
-        tmpTransporterCargo[itm].count--;
-        if (tmpTransporterCargo[itm].count < 1) {
-          delete tmpTransporterCargo[itm];
+        if (tmpTransporterCargo[itm] === undefined) {
+          tmpTransporterCargo[itm] = {
+            id: tmpItems[itm].id,
+            name: tmpItems[itm].name,
+            count: 1,
+            weight: tmpItems[itm].weight,
+            utility: tmpItems[itm].utility,
+            totals: {
+              weight: tmpItems[itm].weight,
+              utility: tmpItems[itm].utility,
+            },
+            utility_sum: 0,
+            img: tmpItems[itm].img,
+          };
+          tmpTransporter.weight_left -= tmpItems[itm].weight;
+          tmpTransporter.utility_sum += tmpItems[itm].utility;
+        } else {
+          tmpTransporterCargo[itm].count++;
+          tmpTransporterCargo[itm].totals.weight +=
+            tmpTransporterCargo[itm].weight;
+          tmpTransporterCargo[itm].totals.utility +=
+            tmpTransporterCargo[itm].utility;
+          tmpTransporterCargo[itm].utility_sum +=
+            tmpTransporterCargo[itm].utility;
+          tmpTransporter.weight_left -= tmpItems[itm].weight;
+          tmpTransporter.utility_sum += tmpItems[itm].utility;
         }
       }
 
       return {
         ...state,
         storeItems: tmpItems,
-        transporter: tmpTransporter,
+        transporter: tmpTransporters,
+      };
+    }
+
+    case REMOVE_ITEM_TRANSPORTER: {
+      // console.log(action.type, action.payload);
+      const { transporter, itm } = action.payload;
+      let tmpStoreItems = state.storeItems;
+      let tmpTransporters = state.transporter;
+      let tmpTransporter = state.transporter[transporter];
+      let tmpTransporterCargo = state.transporter[transporter].items;
+      console.log(transporter, "loaded with", tmpTransporterCargo);
+      if (
+        tmpTransporterCargo[itm] === undefined &&
+        tmpStoreItems[itm] !== undefined
+      ) {
+        console.log(
+          "Trouble in the Transporter!!! >> Item doesn't exist! Stolen?"
+        );
+      } else {
+        tmpTransporterCargo[itm].count--;
+        tmpTransporterCargo[itm].totals.weight -=
+          tmpTransporterCargo[itm].weight;
+        tmpTransporterCargo[itm].totals.utility -=
+          tmpTransporterCargo[itm].utility;
+        tmpTransporter.weight_left += tmpTransporterCargo[itm].weight;
+        tmpTransporter.utility_sum -= tmpTransporterCargo[itm].utility;
+        if (tmpTransporterCargo[itm].count < 1) {
+          delete tmpTransporterCargo[itm];
+          tmpStoreItems[itm].units.left++;
+        }
+      }
+      if (
+        tmpStoreItems[itm] !== undefined &&
+        tmpTransporterCargo[itm] !== undefined
+      ) {
+        tmpStoreItems[itm].units.left++;
+      } else {
+        console.log("Trouble in the Warehouse!!! >> Item stolen?");
+      }
+
+      return {
+        ...state,
+        storeItems: tmpStoreItems,
+        transporter: tmpTransporters,
       };
     }
 

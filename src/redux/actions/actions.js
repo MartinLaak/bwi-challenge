@@ -7,6 +7,7 @@ import {
   ADD_ITEM_STORE,
   CLEAR_STORE_TRANSPORTER,
   INIT_DATA,
+  INIT_SORTED_DATA,
 } from "./actionTypes";
 
 export const addTransporterAction = (t) => ({
@@ -44,5 +45,9 @@ export const removeItemFromTransporterAction = (transporter, itm) => ({
 });
 export const initDataAction = (d) => ({
   type: INIT_DATA,
+  payload: { d },
+});
+export const setSortedDataAction = (d) => ({
+  type: INIT_SORTED_DATA,
   payload: { d },
 });

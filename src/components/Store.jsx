@@ -13,14 +13,16 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
-// import Collapse from "@material-ui/core/Collapse";
 import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ShareIcon from "@material-ui/icons/Share";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Box from "@material-ui/core/Box";
 
 class Store extends Component {
   constructor(props) {
@@ -31,6 +33,50 @@ class Store extends Component {
     this.addItem = this.addItem.bind(this);
     this.remItem = this.remItem.bind(this);
   }
+
+  CircularProgressWithLabel = (left, requested) => {
+    return (
+      <Box position="relative" display="inline-flex">
+        <CircularProgress
+          variant="determinate"
+          value={(left / requested) * 100}
+        />
+        <Box
+          top={0}
+          left={0}
+          bottom={0}
+          right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography
+            variant="caption"
+            component="div"
+            color="textSecondary"
+          >{`${Math.round((left / requested) * 100)}%`}</Typography>
+        </Box>
+        <Box
+          top={0}
+          left={75}
+          bottom={0}
+          right={0}
+          width={100}
+          position="absolute"
+          display="flex"
+          alignItems="left"
+          justifyContent="left"
+        >
+          <Typography variant="caption" component="div" color="textSecondary">
+            Left: {left}
+            <br />
+            Requested {requested}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  };
 
   imageCard = (itm) => {
     const classes = makeStyles((theme) => ({
@@ -73,27 +119,60 @@ class Store extends Component {
         />
         <CardMedia className={classes.media} image={itm.img} title={itm.name} />
         <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
+          {/* <Typography variant="body2" color="textSecondary" component="p">
             Left: {itm.units.left}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             Requested:
             {itm.units.requested}
-          </Typography>
+          </Typography> */}
+          {this.CircularProgressWithLabel(itm.units.left, itm.units.requested)}
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          <IconButton className={classes.expand} aria-label="show more">
-            <ExpandMoreIcon />
-          </IconButton>
-          <IconButton className={classes.expand} aria-label="show more">
-            <ExpandMoreIcon />
-          </IconButton>
+          <Button
+            variant="contained"
+            color="default"
+            className={classes.button}
+            startIcon={<ArrowUpwardIcon />}
+            onClick={() => {
+              this.remItem("Transporter 1", itm.name);
+            }}
+          >
+            T1
+          </Button>
+          <Button
+            variant="contained"
+            color="default"
+            className={classes.button}
+            startIcon={<ArrowUpwardIcon />}
+            onClick={() => {
+              this.remItem("Transporter 2", itm.name);
+            }}
+          >
+            T2
+          </Button>
+          <Button
+            variant="contained"
+            color="default"
+            className={classes.button}
+            startIcon={<ArrowDownwardIcon />}
+            onClick={() => {
+              this.addItem("Transporter 1", itm.name);
+            }}
+          >
+            T1
+          </Button>
+          <Button
+            variant="contained"
+            color="default"
+            className={classes.button}
+            startIcon={<ArrowDownwardIcon />}
+            onClick={() => {
+              this.addItem("Transporter 2", itm.name);
+            }}
+          >
+            T2
+          </Button>
         </CardActions>
       </Card>
     );
@@ -113,145 +192,69 @@ class Store extends Component {
   };
 
   render() {
-    console.log("RENDER STORE");
-    console.log(this.props.items);
+    // console.log("RENDER STORE");
+    // console.log(this.props.items);
     let itms = [];
     Object.entries(this.props.items).forEach(([k, v]) => {
       itms.push(v);
     });
+
+    const classes = makeStyles((theme) => ({
+      root: {
+        maxWidth: 345,
+        backgroundColor: "aquamarine",
+      },
+      media: {
+        height: 0,
+        paddingTop: "56.25%", // 16:9
+      },
+      expand: {
+        transform: "rotate(0deg)",
+        marginLeft: "auto",
+        transition: theme.transitions.create("transform", {
+          duration: theme.transitions.duration.shortest,
+        }),
+      },
+      expandOpen: {
+        transform: "rotate(180deg)",
+      },
+      avatar: {
+        backgroundColor: red[500],
+      },
+    }));
+
     return (
-      <div
-        style={{
-          // border: "2px solid blue",
-          margin: "5px",
-          padding: "20px",
-          background: "rgb(199 203 255 20%)",
-          borderRadius: "4px",
-          boxShadow:
-            "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
-          // boxShadow: "3px 3px 5px 2px #000000cc",
-        }}
-      >
-        <div>
-          <h2> Name: {this.props.name}</h2>
-        </div>
-        <div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr 1fr",
-              gridTemplateRows: "1fr 1fr 1fr",
-              gap: "20px 20px",
-            }}
-          >
+      <Card className={classes.root}>
+        {/* <CardHeader
+          avatar={
+            <Avatar aria-label="recipe" className={classes.avatar}>
+              S
+            </Avatar>
+          }
+          title={this.props.name}
+          subheader="This is the Store where the units are delivered from!"
+        /> */}
+        <CardContent>
+          <Grid container spacing={1}>
             {itms.map((itm, index) => {
-              return this.imageCard(itm);
-              // return (
-              //   <div
-              //     style={{
-              //       border: "1px solid #dddddd",
-              //       margin: "0px",
-              //       background: "rgb(255 171 40 / 38%)",
-              //       borderRadius: "4px",
-              //       boxShadow:
-              //         "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
-              //     }}
-              //   >
-              //     <div>
-              //       {/* <div> */}
-              //       <img
-              //         style={{
-              //           width: "40px",
-              //           height: "40px",
-              //           border: "1px solid #dddddd",
-              //           margin: "5px",
-              //           background: "rgb(255 171 40 / 38%)",
-              //           borderRadius: "50%",
-              //           boxShadow:
-              //             "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
-              //           objectFit: "cover",
-              //         }}
-              //         src={itm.img}
-              //         alt="Cat"
-              //       />
-              //       <h3>{itm.name}</h3>
-              //       {/* </div> */}
-              //     </div>
-              //     <div
-              //       style={{
-              //         display: "grid",
-              //         gridTemplateRows: "1fr 1fr 1fr",
-              //         gridTemplateColumns: "50% 50%",
-              //         gridGap: "5px 5px",
-              //         gridAutoFlow: "row",
-              //         margin: "5px",
-              //         fontSize: "10px",
-              //       }}
-              //     >
-              //       <div>Left: {itm.units.left}</div>
-              //       <div>
-              //         Requested:
-              //         {itm.units.requested}
-              //       </div>
-              //       <div style={{ gridColumn: "1/3" }}>
-              //         Item Weight: {itm.weight} <br />
-              //         Item Utility: {itm.utility} <br />
-              //         Weight Total: {itm.totals.weight} <br />
-              //         Utility Total: {itm.totals.utility}
-              //       </div>
-              //       <div style={{ gridColumn: "1/3" }}>
-              //         <Button
-              //           onClick={() => this.addItem("Transporter 1", itm.name)}
-              //           variant="contained"
-              //           color="primary"
-              //           size="small"
-              //         >
-              //           T1+
-              //         </Button>
-              //         <Button
-              //           onClick={() => this.addItem("Transporter 2", itm.name)}
-              //           variant="contained"
-              //           color="primary"
-              //           size="small"
-              //         >
-              //           T2+
-              //         </Button>
-              //         <Button
-              //           onClick={() => this.remItem("Transporter 1", itm.name)}
-              //           variant="contained"
-              //           color="primary"
-              //           size="small"
-              //         >
-              //           T1-
-              //         </Button>
-              //         <Button
-              //           onClick={() => this.remItem("Transporter 2", itm.name)}
-              //           variant="contained"
-              //           color="primary"
-              //           size="small"
-              //         >
-              //           T2-
-              //         </Button>
-              //       </div>
-              //     </div>
-              //   </div>
-              // );
+              return (
+                <Grid item xs key={itm.key}>
+                  {this.imageCard(itm)}
+                </Grid>
+              );
             })}
-          </div>
-        </div>
-      </div>
+          </Grid>
+        </CardContent>
+      </Card>
     );
   }
 }
-
-//export default Store;
 
 const mapStateToProps = (state) => {
   return {
     items: { ...getStoreItems(state) },
   };
 };
-// export default connect(mapStateToProps)(Store);
 
 export default connect(mapStateToProps, {
   addItemToTransporterAction,
